@@ -8,10 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 import java.io.Serializable;
 
 public class Main {
@@ -161,6 +158,17 @@ class MainTest {
         Main.Execute(output, root, Constants.LIST_CONTENTS, "");
         var out = output.getLines();
         assertEquals(out.get(0), expected);
+    }
+
+
+    @Test
+    void runTestCreateDir() {
+        Main.Execute(output, root, Constants.MAKE_DIRECTORY, "Z");
+        Main.Execute(output, root, Constants.MAKE_DIRECTORY, "X");
+        Main.Execute(output, root, Constants.MAKE_DIRECTORY, "Y");
+        Main.Execute(output, root, Constants.LIST_CONTENTS, "");
+        var out = output.getLines();
+        assertEquals(out.size(), 3);
     }
 
     @ParameterizedTest
@@ -355,8 +363,8 @@ class FileObject extends FileSystemObject implements IFileObject {
 }
 
 interface IDirectoryObject extends IFileSystemObject {
-    public HashSet<IDirectoryObject> getDirectories();
-    public HashSet<IFileObject> getFiles();
+    public ArrayList<IDirectoryObject> getDirectories();
+    public ArrayList<IFileObject> getFiles();
     public IDirectoryObject addDirectory(IDirectoryObject directory);
     public IDirectoryObject addDirectory(String name);
     public void removeDirectory(IDirectoryObject directory);
@@ -485,13 +493,17 @@ class DirectoryObject extends FileSystemObject implements IDirectoryObject {
     }
 
     @Override
-    public HashSet<IDirectoryObject> getDirectories() {
-        return this.directories;
+    public ArrayList<IDirectoryObject> getDirectories() {
+        ArrayList<IDirectoryObject> list = new ArrayList(this.directories);
+        list.sort(Comparator.comparing(IFileSystemObject::getName));
+        return list;
     }
 
     @Override
-    public HashSet<IFileObject> getFiles() {
-        return this.files;
+    public ArrayList<IFileObject> getFiles() {
+        ArrayList<IFileObject> list = new ArrayList(this.files);
+        list.sort(Comparator.comparing(IFileSystemObject::getName));
+        return list;
     }
 }
 
