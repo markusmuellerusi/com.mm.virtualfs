@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.nio.file.ProviderNotFoundException;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.io.Serializable;
@@ -15,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        IDirectoryObject currentDirectory = new RootDirectory();
+        IDirectoryObject currentDirectory = FileSystemProvider.GetDirectory(FileSystemProvider.ProviderType.VIRTUAL);
         Scanner scanner = new Scanner(System.in);
         IOutput output = new Output();
 
@@ -116,13 +117,21 @@ public class Main {
                                      IDirectoryObject currentDirectory, IDirectoryObject directory,
                                      boolean recursive, boolean useRelativePath) {
         for (IDirectoryObject dir: directory.getDirectories()) {
-            output.writeLine(dir.getFullPath());
+            String path = getPath(currentDirectory, dir, useRelativePath);
+            output.writeLine(path);
             if (!recursive) continue;
             printObjects(output, currentDirectory, dir, true, useRelativePath);
         }
         for (IFileObject file: directory.getFiles()) {
-            output.writeLine(file.getFullPath());
+            String path = getPath(currentDirectory, file, useRelativePath);
+            output.writeLine(path);
         }
+    }
+
+    private static String getPath(IDirectoryObject currentDirectory, IFileSystemObject fso, boolean useRelativePath) {
+        String fullPath = fso.getFullPath();
+        if (!useRelativePath) return fullPath;
+        return fullPath.substring(currentDirectory.getFullPath().length());
     }
 }
 
@@ -159,7 +168,6 @@ class MainTest {
         var out = output.getLines();
         assertEquals(out.get(0), expected);
     }
-
 
     @Test
     void runTestCreateDir() {
@@ -511,5 +519,21 @@ class RootDirectory extends DirectoryObject {
     public RootDirectory() {
         super.setName("root");
         initHierarchy(null);
+    }
+}
+
+class FileSystemProvider {
+    public enum ProviderType {
+        VIRTUAL,
+        PHYSICAL
+    }
+
+    public static IDirectoryObject GetDirectory(ProviderType type){
+        switch (type) {
+            case VIRTUAL:
+                return new RootDirectory();
+            default:
+                throw new ProviderNotFoundException();
+        }
     }
 }
