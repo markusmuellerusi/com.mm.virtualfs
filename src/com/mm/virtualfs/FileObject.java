@@ -1,7 +1,6 @@
 package com.mm.virtualfs;
-/*
+
 public class FileObject extends FileSystemObject implements IFileObject {
-    public FileObject() {}
 
     public FileObject(String name, IDirectoryObject parent) {
         super(name, parent);
@@ -9,9 +8,8 @@ public class FileObject extends FileSystemObject implements IFileObject {
 
     @Override
     public void delete(){
-        var parent = super.getParent();
+        IDirectoryObject parent = super.getParent();
         if (parent == null) return;
         parent.removeFile(this);
     }
 }
-*/

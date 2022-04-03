@@ -1,9 +1,8 @@
-
 package com.mm.virtualfs;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
-/*
+
 public class FileSystemObject implements Serializable, IFileSystemObject {
 
     private String name;
@@ -22,18 +21,14 @@ public class FileSystemObject implements Serializable, IFileSystemObject {
         if (parent == null){
             return name;
         }
-        var path = name;
-        var p = this.parent;
-        while (true) {
-            if (p == null)
-            {
-                break;
-            }
-            path = p.getName() + "/" + path;
+        String path = name;
+        IDirectoryObject p = this.parent;
+        while (p != null) {
+            path = String.format("%s/%s", p.getName(), path);
             p = p.getParent();
         }
 
-        return path;
+        return String.format("/%s", path);
     }
 
     public String getName() {
@@ -41,10 +36,10 @@ public class FileSystemObject implements Serializable, IFileSystemObject {
     }
     public void setName(String name) {
         if (name == null || name.length() == 0 || name.length() > 100) {
-            throw new InvalidParameterException("Length of name should be greater than 0 and less or equal to 100!");
+            throw new InvalidParameterException(Constants.INVALID_NAME);
         }
         if (name.contains("/") || name.contains("\\")) {
-            throw new InvalidParameterException("Invalid characters in name!");
+            throw new InvalidParameterException(Constants.INVALID_CHARACTER);
         }
         this.name = name;
     }
@@ -64,4 +59,3 @@ public class FileSystemObject implements Serializable, IFileSystemObject {
         this.name = name;
     }
 }
-*/

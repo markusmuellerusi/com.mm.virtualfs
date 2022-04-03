@@ -1,3 +1,3 @@
 package com.mm.virtualfs;
 
-//public interface IFileObject extends IFileSystemObject {}
+public interface IFileObject extends IFileSystemObject {}

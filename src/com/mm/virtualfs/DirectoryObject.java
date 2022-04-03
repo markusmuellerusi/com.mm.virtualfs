@@ -1,8 +1,10 @@
 package com.mm.virtualfs;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
-/*
+
 public class DirectoryObject extends FileSystemObject implements IDirectoryObject {
 
     private HashSet<IDirectoryObject> directories;
@@ -24,19 +26,19 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     protected void initHierarchy(IDirectoryObject parent) {
         super.setParent(parent);
-        for (var dir: directories) {
+        for (IDirectoryObject dir: directories) {
             ((DirectoryObject)dir).initHierarchy(this);
         }
-        for (var file: files) {
+        for (IFileObject file: files) {
             file.setParent(this);
         }
     }
 
     @Override
     public IDirectoryObject addDirectory(IDirectoryObject directory) {
-        for (var dir: directories) {
-            if (directory.getName() == dir.getName()) {
-                throw new InvalidParameterException("Directory already exists");
+        for (IDirectoryObject dir: directories) {
+            if (dir.getName().equals(directory.getName())) {
+                throw new InvalidParameterException(Constants.DIRECTORY_ALREADY_EXISTS);
             }
         }
         directories.add(directory);
@@ -58,9 +60,8 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public void removeDirectory(String name) {
-        IDirectoryObject dir = null;
-        for (var directory : this.directories) {
-            if (name == directory.getName()) {
+        for (IDirectoryObject directory : this.directories) {
+            if (directory.getName().equals(name)) {
                 removeDirectory(directory);
                 break;
             }
@@ -74,9 +75,9 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public IFileObject addFile(IFileObject file) {
-        for (var f: files) {
-            if (file.getName() == f.getName()) {
-                throw new InvalidParameterException("File already exists");
+        for (IFileObject f: files) {
+            if (f.getName().equals(file.getName())) {
+                throw new InvalidParameterException(Constants.FILE_ALREADY_EXISTS);
             }
         }
         files.add(file);
@@ -92,8 +93,8 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public void removeFile(String name) {
-        for (var file : this.files) {
-            if (name == file.getName()) {
+        for (IFileObject file : this.files) {
+            if (file.getName().equals(name)) {
                 removeFile(file);
                 break;
             }
@@ -113,19 +114,22 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public void delete(){
-        var parent = super.getParent();
+        IDirectoryObject parent = super.getParent();
         if (parent == null) return;
         parent.removeDirectory(this);
     }
 
     @Override
-    public HashSet<IDirectoryObject> getDirectories() {
-        return this.directories;
+    public ArrayList<IDirectoryObject> getDirectories() {
+        ArrayList list = new ArrayList(this.directories);
+        list.sort(Comparator.comparing(IFileSystemObject::getName));
+        return list;
     }
 
     @Override
-    public HashSet<IFileObject> getFiles() {
-        return this.files;
+    public ArrayList<IFileObject> getFiles() {
+        ArrayList list = new ArrayList(this.files);
+        list.sort(Comparator.comparing(IFileSystemObject::getName));
+        return list;
     }
 }
-*/
