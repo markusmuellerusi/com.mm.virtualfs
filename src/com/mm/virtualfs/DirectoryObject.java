@@ -1,9 +1,7 @@
 package com.mm.virtualfs;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 
 public class DirectoryObject extends FileSystemObject implements IDirectoryObject {
 
@@ -36,10 +34,9 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public IDirectoryObject addDirectory(IDirectoryObject directory) {
-        for (IDirectoryObject dir: directories) {
-            if (dir.getName().equals(directory.getName())) {
-                throw new InvalidParameterException(Constants.DIRECTORY_ALREADY_EXISTS);
-            }
+        IDirectoryObject d = tryFindDirectory(directory.getName());
+        if (d != null) {
+            throw new InvalidParameterException(Constants.FILE_ALREADY_EXISTS);
         }
         directories.add(directory);
         directory.setParent(this);
@@ -60,12 +57,11 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public void removeDirectory(String name) {
-        for (IDirectoryObject directory : this.directories) {
-            if (directory.getName().equals(name)) {
-                removeDirectory(directory);
-                break;
-            }
-        }
+        IDirectoryObject directory = tryFindDirectory(name);
+        if (directory == null)
+            return;
+
+        removeDirectory(directory);
     }
 
     @Override
@@ -74,11 +70,39 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
     }
 
     @Override
+    public IFileSystemObject tryFind(String path) {
+        if (path == null || path.length() == 0)
+            return null;
+
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+
+        if (!(path + "/").startsWith(getName() + "/")) {
+            return null;
+        }
+
+        String[] s = path.split("/");
+        if (s.length == 1) {
+            return null;
+        }
+        IDirectoryObject dir = tryFindDirectory(s[1]);
+        if (s.length == 2) {
+            if (dir != null) return dir;
+            return tryFindFile(s[0]);
+        } else {
+            if (dir == null) return null;
+            List<String> list = Arrays.asList(s);
+            list.remove(0);
+            return dir.tryFind(String.join("/", list));
+        }
+    }
+
+    @Override
     public IFileObject addFile(IFileObject file) {
-        for (IFileObject f: files) {
-            if (f.getName().equals(file.getName())) {
-                throw new InvalidParameterException(Constants.FILE_ALREADY_EXISTS);
-            }
+        IFileObject f = tryFindFile(file.getName());
+        if (f != null) {
+            throw new InvalidParameterException(Constants.FILE_ALREADY_EXISTS);
         }
         files.add(file);
         file.setParent(this);
@@ -93,11 +117,9 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
 
     @Override
     public void removeFile(String name) {
-        for (IFileObject file : this.files) {
-            if (file.getName().equals(name)) {
-                removeFile(file);
-                break;
-            }
+        IFileObject file = tryFindFile(name);
+        if (file != null) {
+            removeFile(file);
         }
     }
 
@@ -131,5 +153,25 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
         ArrayList list = new ArrayList(this.files);
         list.sort(Comparator.comparing(IFileSystemObject::getName));
         return list;
+    }
+
+    private IFileObject tryFindFile(String name) {
+        if (name == null || name.length() == 0)
+            return null;
+        for (IFileObject f: files) {
+            if (f.getName().equals(name)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    private IDirectoryObject tryFindDirectory(String name) {
+        for (IDirectoryObject dir: directories) {
+            if (dir.getName().equals(name)) {
+                return dir;
+            }
+        }
+        return null;
     }
 }

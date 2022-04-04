@@ -2,6 +2,8 @@ package com.mm.virtualfs;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
+import java.util.Arrays;
+import java.util.List;
 
 public class FileSystemObject implements Serializable, IFileSystemObject {
 
@@ -47,6 +49,7 @@ public class FileSystemObject implements Serializable, IFileSystemObject {
     public IDirectoryObject getParent() {
         return parent;
     }
+
     public void setParent(IDirectoryObject parent) {
         this.parent = parent;
     }

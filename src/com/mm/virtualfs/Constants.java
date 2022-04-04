@@ -12,6 +12,7 @@ class Constants {
     public static final String CHANGE_DIRECTORY = "cd";
     public static final String CHANGE_DIRECTORY_UP = "cd..";
     public static final String CREATE_FILE = "touch";
+    public static final String DELETE = "del";
 
     public static final String STRING_EMPTY = "";
     public static final String BLANK = " ";

@@ -15,4 +15,5 @@ public interface IDirectoryObject extends IFileSystemObject {
     void removeFile(String name);
     void removeFile(IFileObject file);
     void removeFiles();
+    IFileSystemObject tryFind(String path);
 }

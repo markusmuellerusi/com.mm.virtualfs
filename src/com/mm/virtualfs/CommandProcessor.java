@@ -107,6 +107,13 @@ public class CommandProcessor {
                     output.writeLine(ex.getMessage());
                 }
                 break;
+            //Delete File or Directory
+            case Constants.DELETE:
+                IFileSystemObject fso = currentDirectory.tryFind(parameter);
+                if (fso != null) {
+                    fso.delete();
+                }
+                break;
             //Unknown Command
             default:
                 output.writeLine(Constants.UNRECOGNIZED_COMMAND);
