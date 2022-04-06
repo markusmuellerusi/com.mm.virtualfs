@@ -36,7 +36,7 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
     public IDirectoryObject addDirectory(IDirectoryObject directory) {
         IDirectoryObject d = tryFindDirectory(directory.getName());
         if (d != null) {
-            throw new InvalidParameterException(Constants.FILE_ALREADY_EXISTS);
+            throw new InvalidParameterException(Constants.DIRECTORY_ALREADY_EXISTS);
         }
         directories.add(directory);
         directory.setParent(this);
@@ -70,7 +70,7 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
     }
 
     @Override
-    public IFileSystemObject tryFind(String path) {
+    public IFileSystemObject tryFindByFullPath(String path) {
         if (path == null || path.length() == 0)
             return null;
 
@@ -94,8 +94,20 @@ public class DirectoryObject extends FileSystemObject implements IDirectoryObjec
             if (dir == null) return null;
             List<String> list = Arrays.asList(s);
             list.remove(0);
-            return dir.tryFind(String.join("/", list));
+            return dir.tryFindByFullPath(String.join("/", list));
         }
+    }
+
+    @Override
+    public IFileSystemObject tryFindByName(String name) {
+        if (name == null || name.length() == 0 || name.indexOf("/") >= 0)
+        {
+            return null;
+        }
+
+        IDirectoryObject dir = tryFindDirectory(name);
+        if (dir != null) return dir;
+        return tryFindFile(name);
     }
 
     @Override

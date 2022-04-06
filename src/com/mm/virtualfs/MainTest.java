@@ -47,7 +47,7 @@ public class MainTest {
     public void runTestCreateAndDeleteDir(String input, String expected) {
         commandProcessor.execute(Constants.MAKE_DIRECTORY, input);
         commandProcessor.execute(Constants.MAKE_DIRECTORY, "Sub");
-        commandProcessor.execute(Constants.DELETE, "/root/Sub");
+        commandProcessor.execute(Constants.DELETE, "Sub");
         commandProcessor.execute(Constants.LIST_CONTENTS, "");
         var out = output.getLines();
         assertEquals(out.get(0), expected);
